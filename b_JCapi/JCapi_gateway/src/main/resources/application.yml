@@ -1,0 +1,45 @@
+server:
+  port: 8090
+spring:
+  cloud:
+    gateway:
+      default-filters:
+        - AddResponseHeader=source, jcgg
+      routes:
+#        - id: after_route
+#          uri: https://www.baidu.com/
+#          predicates:
+#            - After=2024-08-20T17:48:42.789-07:00[America/Denver]
+        - id: api_route
+          uri: http://localhost:8123
+          predicates:
+#            - Path=/api/{api_url},
+            - Path=/api/**,
+logging:
+  level:
+    org:
+      springframework:
+        cloud:
+          gateway: trace
+# todo 网关相关 如 retry 重试 限流 全局染色添加请求头信息(后台校验 防止绕过网关)
+# todo 超时判断 跨域配置 负载均衡
+
+# 路由
+
+# 统一业务处理 在接口请求成功后 接口请求次数 +1
+
+# 访问控制 (黑白名单 )
+
+# 以下配置指定了应用的名称、使用的协议（Dubbo）、注册中心的类型（Nacos）和地址
+dubbo:
+  application:
+    # 设置应用的名称
+    name: dubbo-springboot-demo-provider
+  # 指定使用 Dubbo 协议，且端口设置为 -1，表示随机分配可用端口
+  protocol:
+    name: dubbo
+    port: 22223
+  registry:
+    # 配置注册中心为 Nacos，使用的地址是 nacos://localhost:8848
+    id: nacos-registry
+    address: nacos://localhost:8848
