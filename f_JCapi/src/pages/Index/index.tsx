@@ -49,8 +49,9 @@ const Index: React.FC = () => {
                 />
             </List.Item>
             )
+        }
+      }
 
-        }}
         pagination={
           {
             hideOnSinglePage: true,

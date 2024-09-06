@@ -6,7 +6,7 @@ import {
   ProTable,
 } from '@ant-design/pro-components';
 import '@umijs/max';
-import { Button, Drawer,  message } from 'antd';
+import {Button, Drawer, message, Tooltip} from 'antd';
 import React, { useRef, useState } from 'react';
 import {
   addInterfaceInfoUsingPost, deleteInterfaceInfoUsingPost,
@@ -32,7 +32,7 @@ const TableList: React.FC = () => {
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<API.InterfaceInfo>();
-  const [setSelectedRows] = useState<API.InterfaceInfo[]>([]);
+  // const [setSelectedRows] = useState<API.InterfaceInfo[]>([]);
 
   /**
    * @en-US Add node
@@ -58,7 +58,7 @@ const TableList: React.FC = () => {
   };
 
   /**
-   * @en-US Update node
+   * @en-US Update interface
    * @zh-CN 更新接口信息
    *
    * @param fields
@@ -82,8 +82,8 @@ const TableList: React.FC = () => {
   };
 
   /**
-   *  Delete node
-   * @zh-CN 删除节点
+   *  Delete interface
+   * @zh-CN 删除接口
    *
    * @param record
    */
@@ -153,6 +153,7 @@ const TableList: React.FC = () => {
 
 
 
+
   const columns: ProColumns<API.InterfaceInfo>[] = [
     {
       title: 'id',
@@ -168,38 +169,96 @@ const TableList: React.FC = () => {
           required: true,
           message: "此项必填!",
         }],
-      }
+      },
+      render: (text)=><Tooltip placement="topLeft" title={text}>{text}</Tooltip>,
     },
     {
       title: '接口描述',
       dataIndex: 'description',
       valueType: 'textarea',
+      ellipsis: true,
+      render: (text)=><Tooltip placement="topLeft">{text}</Tooltip>,
     },
     {
       title: '接口类型',
       dataIndex: 'method',
       valueType: 'text',
-      // valueType: 'radio',
+      render: (text)=><Tooltip placement="topLeft" title={text}>{text}</Tooltip>,
+      onCell:()=>{
+        return {
+          style:{
+            overflow: 'auto',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            cursor: 'pointer',
+          }
+        }
+      }
     },
     {
       title: 'url',
       dataIndex: 'url',
       valueType: 'text',
+      ellipsis: true,
+      render: (text)=><Tooltip placement="topLeft" title={text}>{text}</Tooltip>,
+      onCell:()=>{
+        return {
+          style:{
+            overflow: 'auto',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            cursor: 'pointer',
+          }
+        }
+      }
     },
     {
       title: '请求参数',
       dataIndex: 'requestParams',
       valueType: 'jsonCode',
+      onCell:()=>{
+        return {
+          style:{
+            maxWidth: 150,
+            overflow: 'auto',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            cursor: 'pointer',
+          }
+        }
+      }
     },
     {
       title: '请求头',
       dataIndex: 'requestHeader',
       valueType: 'jsonCode',
+      onCell:()=>{
+        return {
+          style:{
+            maxWidth: 150,
+            overflow: 'auto',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            cursor: 'pointer',
+          }
+        }
+      }
     },
     {
       title: '响应头',
       dataIndex: 'responseHeader',
       valueType: 'jsonCode',
+      onCell:()=>{
+        return {
+          style:{
+            maxWidth: 150,
+            overflow: 'auto',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            cursor: 'pointer',
+          }
+        }
+      }
     },
     {
       title: '接口状态',
@@ -234,6 +293,7 @@ const TableList: React.FC = () => {
       title: '操作',
       dataIndex: 'option',
       valueType: 'option',
+      width : 150,
       render: (_, record) => [
         <a
           key="config"
@@ -319,11 +379,7 @@ const TableList: React.FC = () => {
 
         }}
         columns={columns}
-        rowSelection={{
-          onChange: (_, selectedRows) => {
-            setSelectedRows(selectedRows);
-          },
-        }}
+
       />
       <UpdateModal
         columns = {columns}
@@ -376,7 +432,7 @@ const TableList: React.FC = () => {
         columns={columns}
         onCancel={ () => handleModalVisible(false) }
         visible={createModalVisible}
-        onSubmit={(values) => {
+        onSubmit={async (values) => {
           handleAdd(values)}
         }
       />

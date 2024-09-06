@@ -1,23 +1,11 @@
-import { Footer } from '@/components';
-import { getFakeCaptcha } from '@/services/ant-design-pro/login';
-import {
-  AlipayCircleOutlined,
-  LockOutlined,
-  MobileOutlined,
-  TaobaoCircleOutlined,
-  UserOutlined,
-  WeiboCircleOutlined,
-} from '@ant-design/icons';
-import {
-  LoginForm,
-  ProFormCaptcha,
-  ProFormCheckbox,
-  ProFormText,
-} from '@ant-design/pro-components';
-import { history, useModel } from '@umijs/max';
-import { Alert, message, Tabs } from 'antd';
-import { createStyles } from 'antd-style';
-import React, { useState } from 'react';
+import {Footer} from '@/components';
+import {getFakeCaptcha} from '@/services/ant-design-pro/login';
+import {LockOutlined, MobileOutlined, UserOutlined,} from '@ant-design/icons';
+import {LoginForm, ProFormCaptcha, ProFormCheckbox, ProFormText,} from '@ant-design/pro-components';
+import {history, useModel} from '@umijs/max';
+import {Alert, message, Row, Tabs} from 'antd';
+import {createStyles} from 'antd-style';
+import React, {useState} from 'react';
 import {userLoginUsingPost} from "@/services/f_JCapi/userController";
 
 const useStyles = createStyles(({ token }) => {
@@ -56,16 +44,16 @@ const useStyles = createStyles(({ token }) => {
   };
 });
 
-const ActionIcons = () => {
-  const { styles } = useStyles();
-  return (
-    <>
-      <AlipayCircleOutlined key="AlipayCircleOutlined" className={styles.action} />
-      <TaobaoCircleOutlined key="TaobaoCircleOutlined" className={styles.action} />
-      <WeiboCircleOutlined key="WeiboCircleOutlined" className={styles.action} />
-    </>
-  );
-};
+// const ActionIcons = () => {
+//   const { styles } = useStyles();
+//   return (
+//     <>
+//       <AlipayCircleOutlined key="AlipayCircleOutlined" className={styles.action} />
+//       <TaobaoCircleOutlined key="TaobaoCircleOutlined" className={styles.action} />
+//       <WeiboCircleOutlined key="WeiboCircleOutlined" className={styles.action} />
+//     </>
+//   );
+// };
 
 const LoginMessage: React.FC<{
   content: string;
@@ -96,7 +84,6 @@ const Login: React.FC = () => {
       if(res.data){
         // alert(JSON.stringify(res.data));
         const urlParams = new URL(window.location.href).searchParams;
-        message.success("正在跳转....");
         setTimeout(() =>{
           history.push(urlParams.get('redirect') || '/');
         },100);
@@ -126,13 +113,14 @@ const Login: React.FC = () => {
             minWidth: 280,
             maxWidth: '75vw',
           }}
-          logo={<img alt="logo" src="/logo.svg" />}
-          title="Ant Design"
-          subTitle={'Ant Design 是西湖区最具影响力的 Web 设计规范'}
+          // logo={<img alt="logo" src="/logo.svg" />}
+          title="JCapi 开放平台"
+          subTitle="为你提供一些资源"
           initialValues={{
             autoLogin: true,
           }}
-          actions={['其他登录方式 :', <ActionIcons key="icons" />]}
+          // todo 其他方式登录
+          // actions={['其他登录方式 :', <ActionIcons key="icons" />]}
           onFinish={async (values) => {
             // alert("已发出异步请求");
             await handleSubmit(values as API.UserLoginRequest);
@@ -251,20 +239,26 @@ const Login: React.FC = () => {
               marginBottom: 24,
             }}
           >
-            <ProFormCheckbox noStyle name="autoLogin">
-              自动登录
-            </ProFormCheckbox>
-            <a
-              style={{
-                float: 'right',
-              }}
-            >
-              忘记密码 ?
-            </a>
+            <Row justify="space-between">
+              <ProFormCheckbox noStyle name="autoLogin">
+                自动登录
+              </ProFormCheckbox>
+
+              <a
+                style={{
+                  float: 'right',
+                }}
+              >
+                忘记密码 ?
+              </a>
+              <a href="/user/register">
+                账号注册
+              </a>
+            </Row>
           </div>
         </LoginForm>
       </div>
-      <Footer />
+      <Footer/>
     </div>
   );
 };

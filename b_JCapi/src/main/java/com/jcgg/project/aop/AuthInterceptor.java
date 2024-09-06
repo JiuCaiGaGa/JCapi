@@ -66,4 +66,3 @@ public class AuthInterceptor {
         return joinPoint.proceed();
     }
 }
-

@@ -5,11 +5,10 @@ import {
   ProTable,
 } from '@ant-design/pro-components';
 import '@umijs/max';
-import { Drawer} from 'antd';
+import {Drawer, Tooltip} from 'antd';
 import React, { useRef, useState } from 'react';
 import {
   listDeletedInterfaceInfoUsingGet,
-  listInterfaceInfoByPageUsingGet,
 } from "@/services/f_JCapi/interfaceInfoController";
 
 const TableList: React.FC = () => {
@@ -26,7 +25,6 @@ const TableList: React.FC = () => {
   const [showDetail, setShowDetail] = useState<boolean>(false);
   const actionRef = useRef<ActionType>();
   const [currentRow, setCurrentRow] = useState<API.InterfaceInfo>();
-  const [setSelectedRows] = useState<API.InterfaceInfo[]>([]);
 
   const columns: ProColumns<API.InterfaceInfo>[] = [
     {
@@ -43,38 +41,96 @@ const TableList: React.FC = () => {
           required: true,
           message: "此项必填!",
         }],
-      }
+      },
+      render: (text)=><Tooltip placement="topLeft" title={text}>{text}</Tooltip>,
     },
     {
       title: '接口描述',
       dataIndex: 'description',
       valueType: 'textarea',
+      ellipsis: true,
+      render: (text)=><Tooltip placement="topLeft">{text}</Tooltip>,
     },
     {
       title: '接口类型',
       dataIndex: 'method',
       valueType: 'text',
-      // valueType: 'radio',
+      render: (text)=><Tooltip placement="topLeft" title={text}>{text}</Tooltip>,
+      onCell:()=>{
+        return {
+          style:{
+            overflow: 'auto',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            cursor: 'pointer',
+          }
+        }
+      }
     },
     {
       title: 'url',
       dataIndex: 'url',
       valueType: 'text',
+      ellipsis: true,
+      render: (text)=><Tooltip placement="topLeft" title={text}>{text}</Tooltip>,
+      onCell:()=>{
+        return {
+          style:{
+            overflow: 'auto',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            cursor: 'pointer',
+          }
+        }
+      }
     },
     {
       title: '请求参数',
       dataIndex: 'requestParams',
       valueType: 'jsonCode',
+      onCell:()=>{
+        return {
+          style:{
+            maxWidth: 150,
+            overflow: 'auto',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            cursor: 'pointer',
+          }
+        }
+      }
     },
     {
       title: '请求头',
       dataIndex: 'requestHeader',
       valueType: 'jsonCode',
+      onCell:()=>{
+        return {
+          style:{
+            maxWidth: 150,
+            overflow: 'auto',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            cursor: 'pointer',
+          }
+        }
+      }
     },
     {
       title: '响应头',
       dataIndex: 'responseHeader',
       valueType: 'jsonCode',
+      onCell:()=>{
+        return {
+          style:{
+            maxWidth: 150,
+            overflow: 'auto',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            cursor: 'pointer',
+          }
+        }
+      }
     },
     {
       title: '接口创建时间',
@@ -94,7 +150,7 @@ const TableList: React.FC = () => {
   return (
     <PageContainer>
       <ProTable<API.InterfaceInfo, API.PageParams>
-        headerTitle={'查询表格'}
+        headerTitle={'已弃用接口'}
         actionRef={actionRef}
         rowKey="key"
         search={{
@@ -105,10 +161,11 @@ const TableList: React.FC = () => {
             ...params
           });
           if(res.data) {
+            console.log(res.data);
             return {
               data: res.data || [],
               success: true,
-              total: 0,
+              total: res.data.length,
             }
           }
           return {
