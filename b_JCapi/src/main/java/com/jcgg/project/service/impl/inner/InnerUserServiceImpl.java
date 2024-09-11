@@ -36,6 +36,11 @@ public class InnerUserServiceImpl implements InnerUserService {
         return userMapper.selectOne(queryWrapper).getSecretKey();
     }
 
+    /**
+     *
+     * @param ak 用户的 AK
+     * @return 是否存在此 AK
+     */
     @Override
     public boolean HaveAk(String ak) {
         if (StringUtils.isBlank(ak)){throw new BusinessException(ErrorCode.PARAMS_ERROR);}

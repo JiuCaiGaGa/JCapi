@@ -3,7 +3,10 @@ package com.jcgg.project.service;
 import com.jcgg.model.entity.User;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 
 import javax.annotation.Resource;
 
@@ -79,4 +82,18 @@ class UserServiceTest {
     }
 
 
+    @Autowired
+    private StringRedisTemplate stringRedisTemplate;
+
+    @Test
+    void updateUserCache() {
+        Long userId = 1L;
+        boolean flag = userService.updateUserCache(userId);
+        Assertions.assertTrue(flag);
+
+        ValueOperations<String, String> opsForValue = stringRedisTemplate.opsForValue();
+
+        String value = opsForValue.get("login:token:1"); // 获取缓存数据
+        System.out.println(" =================~============~============== login:token: " + value);
+    }
 }

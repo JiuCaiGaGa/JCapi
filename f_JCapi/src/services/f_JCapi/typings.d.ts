@@ -163,7 +163,7 @@ declare namespace API {
 
   type InterfaceInfoInvokeRequest = {
     id?: number;
-    userRequestParams?: string;
+    requestParams?: Record<string, any>;
   };
 
   type InterfaceInfoUpdateRequest = {

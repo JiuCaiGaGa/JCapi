@@ -36,3 +36,6 @@ build/
 ### log
 *.log
 b_JCapi/logs/
+
+#Redis 持久化文件
+b_JCapi/dump.rdb

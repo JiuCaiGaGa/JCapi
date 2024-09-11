@@ -2,21 +2,28 @@ package com.jcgg.project.service.impl;
 
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.crypto.digest.DigestUtil;
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.jcgg.model.entity.User;
+import com.jcgg.model.vo.UserVO;
 import com.jcgg.project.common.ErrorCode;
 import com.jcgg.project.exception.BusinessException;
 import com.jcgg.project.mapper.UserMapper;
 import com.jcgg.project.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.concurrent.TimeUnit;
 
+import static com.jcgg.project.constant.RedisConstants.LOGIN_TOKEN_KEY;
+import static com.jcgg.project.constant.RedisConstants.LOGIN_TOKEN_TTL;
 import static com.jcgg.project.constant.UserConstant.ADMIN_ROLE;
 import static com.jcgg.project.constant.UserConstant.USER_LOGIN_STATE;
 
@@ -33,10 +40,15 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
     @Resource
     private UserMapper userMapper;
 
+
+    @Resource
+    private StringRedisTemplate stringRedisTemplate;
+
     /**
      * 盐值，混淆密码
      */
     private static final String SALT = "jcgg.com/\\/";
+    private Long userId;
 
     @Override
     public long userRegister(String userAccount, String userPassword, String checkPassword) {
@@ -161,6 +173,25 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         // 移除登录态
         request.getSession().removeAttribute(USER_LOGIN_STATE);
+        return true;
+    }
+
+    @Override
+    public UserVO getUserVO(User user) {
+        if (user == null) {
+            return null;
+        }
+        UserVO userVO = new UserVO();
+        BeanUtils.copyProperties(user, userVO);
+        return userVO;
+    }
+    @Override
+    public boolean updateUserCache(Long userId) {
+        // 重新设置用户缓存
+        User user = this.getById(userId);
+        UserVO userVO = this.getUserVO(user);
+        String userVOJson = JSON.toJSONString(userVO);
+        stringRedisTemplate.opsForValue().set(LOGIN_TOKEN_KEY + userId, userVOJson, LOGIN_TOKEN_TTL, TimeUnit.MINUTES);
         return true;
     }
 

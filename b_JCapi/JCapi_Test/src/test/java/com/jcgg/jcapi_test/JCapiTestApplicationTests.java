@@ -1,7 +1,7 @@
 package com.jcgg.jcapi_test;
 
 import com.jcgg.jcapiclientsdk.client.JcApiClient;
-import com.jcgg.jcapiclientsdk.model.User;
+import com.jcgg.jcapiclientsdk.model.response.UserResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -22,7 +22,7 @@ class JCapiTestApplicationTests {
         String name = jcClient.getNameByGet("jcgg");
         System.out.println("name "+name);
 
-        User user = new User();
+        UserResponse user = new UserResponse();
 
         user.setUsername("jcgg?qqq");
 

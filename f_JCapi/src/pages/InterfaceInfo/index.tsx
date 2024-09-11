@@ -1,10 +1,9 @@
-import { PageContainer } from '@ant-design/pro-components';
+import {PageContainer} from '@ant-design/pro-components';
 import {Button, Card, Descriptions, Divider, Form, Input, message} from 'antd';
 import React, {useEffect, useState} from 'react';
-import {
-  getInterfaceInfoByIdUsingGet, invokeInterfaceInfoUsingPost,
-} from "@/services/f_JCapi/interfaceInfoController";
+
 import {useParams} from "@@/exports";
+import {getInterfaceInfoByIdUsingGet, invokeInterfaceInfoUsingPost} from "@/services/f_JCapi/interfaceInfoController";
 
 
 const Index: React.FC = () => {
@@ -42,15 +41,24 @@ const Index: React.FC = () => {
       message.error("接口不存在");
       return;
     }
+    if(!values){
+      console.log("values为空");
+    }else {
+      console.log(JSON.stringify(values));
+    }
+
 
     setInvokeLoading(true);
     try {
+      // const requestParams =
       const res = await invokeInterfaceInfoUsingPost({
-        id : parms.id,
-        ...values,
+        id : parms.id ? Number(parms.id) : -1,
+        // requestParams : values.requestParams,
+        requestParams : values,
       });
-      setInvokeRes(res.data);
-      message.success('操作成功!');
+      // console.log(JSON.stringify(res.data));
+      setInvokeRes(JSON.stringify(res));
+      message.success('请求发送成功!');
     } catch (error : any) {
       message.error('操作失败!\n错误信息'+error);
     }
@@ -84,7 +92,7 @@ const Index: React.FC = () => {
           {/*todo 不同请求方法对应不同的页面 接口测试限制 如 测试次数 测试频率等*/}
           <Form.Item
             label="请求参数"
-            name="userRequestParams"
+            name="RequestParams"
           >
             <Input.TextArea />
           </Form.Item>

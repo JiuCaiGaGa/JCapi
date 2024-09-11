@@ -1,9 +1,9 @@
-package com.jcgg.jcapiclientsdk.model;
+package com.jcgg.jcapiclientsdk.model.response;
 
 import lombok.Data;
 
 @Data
-public class User {
+public class UserResponse {
 
     private String username;
 
