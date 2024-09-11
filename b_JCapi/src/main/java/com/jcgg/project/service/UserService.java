@@ -3,6 +3,7 @@ package com.jcgg.project.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.jcgg.model.entity.User;
+import com.jcgg.model.vo.UserVO;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -55,5 +56,21 @@ public interface UserService extends IService<User> {
      * @return
      */
     boolean userLogout(HttpServletRequest request);
+
+    /**
+     * 更新用户缓存
+     * @param userId 用户ID
+     * @return true 已更新
+     */
+    boolean updateUserCache(Long userId);
+
+    /**
+     * 获取脱敏的用户信息
+     *
+     * @param user
+     * @return
+     */
+    UserVO getUserVO(User user);
+
 
 }

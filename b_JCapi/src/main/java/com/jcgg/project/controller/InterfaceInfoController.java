@@ -1,9 +1,12 @@
 package com.jcgg.project.controller;
 
+import cn.hutool.core.util.ObjUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.gson.Gson;
 import com.jcgg.jcapiclientsdk.client.JcApiClient;
+import com.jcgg.jcapiclientsdk.exception.JCapiException;
+import com.jcgg.jcapiclientsdk.model.BaseRequest;
+import com.jcgg.jcapiclientsdk.model.response.UserResponse;
 import com.jcgg.model.entity.InterfaceInfo;
 import com.jcgg.model.entity.User;
 import com.jcgg.project.annotation.AuthCheck;
@@ -27,6 +30,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 /**
@@ -242,7 +247,7 @@ public class InterfaceInfoController {
         InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
         if (oldInterfaceInfo == null) {throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);}
         // 判断此接口是否可以被调用
-        com.jcgg.jcapiclientsdk.model.User user = new com.jcgg.jcapiclientsdk.model.User();
+        UserResponse user = new UserResponse();
         user.setUsername("jcgg");
 
         String name = jcApiClient.getUsernameByPost(user);
@@ -297,15 +302,13 @@ public class InterfaceInfoController {
                                                       HttpServletRequest request) {
         if (interfaceInfoInvokeRequest == null || interfaceInfoInvokeRequest.getId() <= 0) {throw new BusinessException(ErrorCode.PARAMS_ERROR);}
         long id = interfaceInfoInvokeRequest.getId();
-        String userRequestParams = interfaceInfoInvokeRequest.getUserRequestParams();
+//        String userRequestParams = interfaceInfoInvokeRequest.getRequestParams();
         // 判断是否存在 或者 是否已被删除
         InterfaceInfo oldInterfaceInfo = interfaceInfoService.getById(id);
         if (oldInterfaceInfo == null ) {throw new BusinessException(ErrorCode.NOT_FOUND_ERROR);}
         if (oldInterfaceInfo.getStatus() != InterfaceStatusEnum.ONLINE.getValue() ) {throw new BusinessException(ErrorCode.NOT_FOUND_ERROR ,"接口不存在") ;}
         // 返回信息
-
         User loginUser = userService.getLoginUser(request);
-
         String ak = loginUser.getAccessKey();
         if(StringUtils.isBlank(ak)){
             throw new RuntimeException("参数错误");
@@ -318,13 +321,38 @@ public class InterfaceInfoController {
         String sk = innerUserService.getSkByAk(ak);
 
 //        JcApiClient tempClient = new JcApiClient(ak,sk);
-        JcApiClient tempClient = new JcApiClient(ak,sk);
+        JcApiClient client = new JcApiClient(ak,sk);
 
-        Gson gson = new Gson();
-        com.jcgg.jcapiclientsdk.model.User user = gson.fromJson(userRequestParams, com.jcgg.jcapiclientsdk.model.User.class);
+//        Gson gson = new Gson();
 
-        // todo 用户根据地址去调用不同的方法
-        String result = tempClient.getUsernameByPost(user);
+        URL url = null;
+
+        try {
+            url = new URL(oldInterfaceInfo.getUrl());
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e+" 地址非法呦~");
+        }
+
+        String path = url.getPath();
+        BaseRequest baseRequest = new BaseRequest();
+        baseRequest.setPath(path);
+        baseRequest.setMethod(oldInterfaceInfo.getMethod());
+
+        baseRequest.setRequestParams(interfaceInfoInvokeRequest.getRequestParams());
+        baseRequest.setUserRequest(request);
+        Object result = null;
+        try {
+            // 调用sdk解析地址方法
+            result = client.parseAddressAndCallInterface(baseRequest);
+        } catch (JCapiException e) {
+            throw new BusinessException(e.getCode(), e.getMessage());
+        }
+        if (ObjUtil.isEmpty(request)) {
+            throw new BusinessException(ErrorCode.OPERATION_ERROR, "请求SDK失败");
+        }
+        log.info("调用api接口返回结果：" + result);
+        // 重构用户缓存
+        userService.updateUserCache(loginUser.getId());
 
         return ResultUtils.success(result);
     }

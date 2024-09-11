@@ -1,7 +1,7 @@
 package com.jcgg.jcapi_test.controller;
 
 
-import com.jcgg.jcapiclientsdk.model.User;
+import com.jcgg.jcapiclientsdk.model.response.UserResponse;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,8 +28,10 @@ public class NameController {
         return "Post_1: 你的名字是" + name;
     }
 
+
+
     @PostMapping("/user")
-    public String getNameByPost_2(@RequestBody User user, HttpServletRequest request) throws UnsupportedEncodingException {
+    public String getNameByPost_2(@RequestBody UserResponse user, HttpServletRequest request) throws UnsupportedEncodingException {
 //        String accessKey = request.getHeader("accessKey");
 //        String nonce = request.getHeader("nonce");
 //        String timestamp = request.getHeader("timestamp");

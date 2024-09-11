@@ -15,8 +15,7 @@ import javax.annotation.Resource;
 public class InnerInterfaceInfoServiceImpl implements InnerInterfaceInfoService {
     @Resource
     InterfaceInfoService interfaceInfoService;
-
-    private static final String HOTS_ADDRESS = "http://localhost:9527";
+    private static final String HOTS_ADDRESS = "http://localhost:8090";
     @Override
     public InterfaceInfo getInterfaceInfo(String url, String method) {
         if(StringUtils.isAnyBlank(url,method)){

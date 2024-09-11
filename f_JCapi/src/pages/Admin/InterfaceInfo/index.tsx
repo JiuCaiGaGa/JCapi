@@ -432,8 +432,11 @@ const TableList: React.FC = () => {
         columns={columns}
         onCancel={ () => handleModalVisible(false) }
         visible={createModalVisible}
-        onSubmit={async (values) => {
-          handleAdd(values)}
+        onSubmit={
+          async (values) => {
+            handleAdd(values);
+            actionRef.current?.reload();
+          }
         }
       />
 

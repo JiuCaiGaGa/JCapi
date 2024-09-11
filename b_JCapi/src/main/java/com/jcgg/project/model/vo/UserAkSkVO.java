@@ -5,7 +5,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 用户视图
+ * 用户Ak Sk视图
  *
  * @TableName user
  */
